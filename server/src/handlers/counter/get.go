@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"net/http"
+	"server/src/database"
 	"server/src/models"
 )
 
@@ -29,6 +30,5 @@ func GetHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getCounter(id string) (counter models.CounterOut, err error) {
-	//TODO: implement
-	return models.CounterOut{}, nil
+	return database.GetCounter(id)
 }

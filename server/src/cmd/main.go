@@ -3,11 +3,13 @@ package main
 import (
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/rs/cors"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"server/src/database"
 	"server/src/handlers/counter"
 	"server/src/helper/auth"
 )
@@ -22,6 +24,10 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// connect to SQLite
+	dbFilepath := filepath.Join("data", os.Getenv("SQLITE_FILE"))
+	database.ConnectDatabase(dbFilepath)
+	
 	// define routes
 	r := mux.NewRouter()
 	apiRouter := r.PathPrefix("/api/v1").Subrouter()

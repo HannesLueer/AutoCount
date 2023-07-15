@@ -1,9 +1,12 @@
 package models
 
 type CounterOut struct {
-	//	TODO
+	ID          string
+	DisplayName string
+	CurrentCars int64
+	MaxCars     int64
 }
 
 type CounterIn struct {
-	//	TODO
+	CurrentCars int64
 }

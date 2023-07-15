@@ -1,7 +1,10 @@
 package auth
 
 import (
+	"crypto/sha256"
+	"fmt"
 	"net/http"
+	"server/src/database"
 )
 
 func IsAuthorized(handler http.HandlerFunc) http.HandlerFunc {
@@ -22,6 +25,7 @@ func IsAuthorized(handler http.HandlerFunc) http.HandlerFunc {
 }
 
 func isAuthorized(username string, password string) bool {
-	//TODO: implement
-	return true
+	passwordHash := fmt.Sprintf("%x", sha256.Sum256([]byte(password)))
+	isAuth, err := database.HasUserWithPasswordHash(username, passwordHash)
+	return isAuth && err == nil
 }
