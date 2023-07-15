@@ -1,0 +1,37 @@
+\documentclass[a4paper,12pt]{article}
+\input{framework/Setup}
+
+\selectlanguage{ngerman}
+% \addbibresource{Verzeichnisse/TODO.bib}
+
+\def\Studiengang{Informatik}
+\def\Autorenname{Hannes Lüer und Marvin Jakob}
+\def\Dozent{Prof.\ Dr.\ Matthias Mörz}
+\def\Titel{AutoCount: Kamera-basierte Erfassung der Parkhausbelegung}
+
+% Infos zum Unternehmen
+\def\Unternehmen{<FIRMENNAME>}
+\def\Abteilung{<ABTEILUNG>}
+\def\Strasse{<STRAßE>}
+\def\Ort{<ORT>}
+
+% Infos zum Betreuer
+\def\Betreuer{Prof.\ Dr.\ Matthias Mörz}
+\def\Funktion{<FUNKTION BETREUER>}
+\def\Telefon{<TELEFONNUMMER BETREUER>}
+\def\Email{<BETREUER EMAIL>}
+
+% Daten
+\def\Beginn{<BEGINN>}
+\def\Ende{<ENDE>}
+\def\Abgabe{\today}
+
+\startHSCdocument[Projektdokumentation]
+
+\setstretch{1.5}
+\include{Sektionen/idee}
+\include{Sektionen/nutzung}
+\include{Sektionen/architektur}
+\include{Sektionen/fazit}
+
+\finishHSCdocument
