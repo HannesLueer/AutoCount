@@ -163,5 +163,5 @@ cython_debug/
 .vscode/
 
 # video output
-*/out/*
-!*/out/real_world/
+/out/*
+!/out/real_world/
