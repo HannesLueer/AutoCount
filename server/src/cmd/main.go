@@ -12,6 +12,7 @@ import (
 	"server/src/database"
 	"server/src/handlers/counter"
 	"server/src/helper/auth"
+	"server/src/mqtt"
 )
 
 func main() {
@@ -27,7 +28,10 @@ func main() {
 	// connect to SQLite
 	dbFilepath := filepath.Join("data", os.Getenv("SQLITE_FILE"))
 	database.ConnectDatabase(dbFilepath)
-	
+
+	// mqtt
+	mqtt.InitMqtt()
+
 	// define routes
 	r := mux.NewRouter()
 	apiRouter := r.PathPrefix("/api/v1").Subrouter()
