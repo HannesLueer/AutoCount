@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 
 class MQTTAppState with ChangeNotifier {
   int _currentCars = 0;
-  int _maxCars = 0;
+  int _maxCars = 1;
   String _siteName = "";
   bool _isConnected = false;
 

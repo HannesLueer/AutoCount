@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Demo: Current Cars</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+
+      label {
+        display: block;
+        margin-top: 1em;
+      }
+
+      input,
+      button {
+        margin-top: 5px;
+        width: 20em;
+        max-width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Demo: PUT Request</h2>
+
+    <label for="site-id">Site ID:</label>
+    <input type="text" id="site-id" placeholder="Site ID" value="HS_Coburg" />
+
+    <label for="password">Password:</label>
+    <input
+      type="password"
+      id="password"
+      placeholder="Password"
+      value="Test123"
+    />
+
+    <label for="slider">Current Cars:</label>
+    <input
+      type="range"
+      id="slider"
+      min="0"
+      max="500"
+      oninput="sendPutRequest()"
+    />
+
+    <script>
+      function sendPutRequest() {
+        const siteId = document.getElementById("site-id").value;
+        const password = document.getElementById("password").value;
+        const currentCars = document.getElementById("slider").value;
+
+        const url = `http://localhost:5000/api/v1/c/${siteId}`;
+        const requestData = {
+          CurrentCars: parseInt(currentCars),
+        };
+
+        fetch(url, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Basic " + btoa(siteId + ":" + password),
+          },
+          body: JSON.stringify(requestData),
+        })
+          .then((response) => {
+            if (response.ok) {
+              console.log("PUT request successful");
+            } else {
+              console.error("PUT request failed");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+    </script>
+  </body>
+</html>
