@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'mqtt.dart';
+import 'mqtt_state.dart';
+import 'package:uuid/uuid.dart';
 
 void main() => runApp(const MyApp());
 
@@ -7,8 +11,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Home(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => MQTTAppState(),
+        ),
+      ],
+      child: const MaterialApp(
+        home: Home(),
+      ),
     );
   }
 }
@@ -21,11 +32,30 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  static const int maxSpace = 500;
-  int carCounter = 0;
+  String host = "192.168.178.2";
+  String topic = "HS_Coburg";
+  late MQTTAppState currentAppState;
+  late MQTTManager manager;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final MQTTAppState appState = Provider.of<MQTTAppState>(context);
+    currentAppState = appState;
+
+    int currentCars = currentAppState.getcurrentCars;
+    int maxCars = currentAppState.getMaxCars;
+    String siteName = currentAppState.getSiteName;
+    bool isConnected = currentAppState.getIsConnected;
+
+    if (!isConnected) {
+      configureAndConnect();
+    }
+
     return Scaffold(
       backgroundColor: Colors.grey[900],
       appBar: AppBar(
@@ -34,56 +64,59 @@ class _HomeState extends State<Home> {
         backgroundColor: Colors.grey[850],
         elevation: 5.0,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            if (carCounter < maxSpace) carCounter++;
-          });
-        },
-        child: Icon(Icons.add),
-        backgroundColor: Colors.grey[800],
-      ),
       body: Padding(
-        padding: EdgeInsets.fromLTRB(30.0, 10, 30, 0),
+        padding: const EdgeInsets.fromLTRB(30.0, 10, 30, 0),
         child: Center(
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  "${maxSpace - carCounter}",
-                  style: TextStyle(
-                      color: Color.fromARGB(
-                          200,
-                          (carCounter / maxSpace * 255).round(),
-                          ((1 - carCounter / maxSpace) * 255).round(),
-                          0),
-                      letterSpacing: 2,
-                      fontSize: 80,
-                      fontWeight: FontWeight.w300),
-                ),
-                Text(
-                  "${(carCounter / maxSpace * 100).toStringAsFixed(1)} %",
-                  style: TextStyle(
-                      color: Colors.grey, letterSpacing: 2, fontSize: 20),
-                )
-              ]),
+          child: Container(
+            margin: const EdgeInsets.fromLTRB(0, 0, 0, 100),
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.fromLTRB(0, 0, 0, 50),
+                    child: Text(
+                      siteName,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                          color: Colors.grey, letterSpacing: 1.2, fontSize: 30),
+                    ),
+                  ),
+                  Text(
+                    "${maxCars - currentCars}",
+                    style: TextStyle(
+                        color: Color.fromARGB(
+                            200,
+                            (currentCars / maxCars * 255).round(),
+                            ((1 - currentCars / maxCars) * 255).round(),
+                            0),
+                        letterSpacing: 2,
+                        fontSize: 80,
+                        fontWeight: FontWeight.w300),
+                  ),
+                  Text(
+                    "${(currentCars / maxCars * 100).toStringAsFixed(1)} %",
+                    style: const TextStyle(
+                        color: Colors.grey, letterSpacing: 2, fontSize: 20),
+                  )
+                ]),
+          ),
         ),
       ),
-      persistentFooterButtons: [
-        Slider.adaptive(
-            value: carCounter.toDouble(),
-            min: 0,
-            max: maxSpace.toDouble(),
-            thumbColor: Colors.grey[700],
-            activeColor: Colors.grey[600],
-            inactiveColor: Colors.grey[800],
-            onChanged: (double newValue) {
-              setState(() {
-                carCounter = newValue.round();
-              });
-            })
-      ],
     );
+  }
+
+  void configureAndConnect() {
+    manager = MQTTManager(
+        host: host,
+        topic: topic,
+        identifier: const Uuid().v4(),
+        state: currentAppState);
+    manager.initializeMQTTClient();
+    manager.connect();
+  }
+
+  void disconnect() {
+    manager.disconnect();
   }
 }

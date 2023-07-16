@@ -53,6 +53,6 @@ func Publish(siteId string, counter models.CounterOut) (err error) {
 		return err
 	}
 
-	err = mqttServer.Publish(siteId, jsonResp, false, 0)
+	err = mqttServer.Publish(siteId, jsonResp, true, 0)
 	return err
 }
