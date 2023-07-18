@@ -1,12 +1,12 @@
 package models
 
 type CounterOut struct {
-	ID          string
-	DisplayName string
-	CurrentCars int64
-	MaxCars     int64
+	ID          string `json:"id"`
+	DisplayName string `json:"displayName"`
+	CurrentCars int64  `json:"currentCars"`
+	MaxCars     int64  `json:"maxCars"`
 }
 
 type CounterIn struct {
-	CurrentCars int64
+	CurrentCars int64 `json:"currentCars"`
 }

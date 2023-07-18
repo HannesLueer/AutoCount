@@ -42,6 +42,7 @@
       id="slider"
       min="0"
       max="500"
+      step="1"
       oninput="sendPutRequest()"
     />
 
@@ -53,7 +54,7 @@
 
         const url = `http://localhost:5000/api/v1/c/${siteId}`;
         const requestData = {
-          CurrentCars: parseInt(currentCars),
+          currentCars: parseInt(currentCars),
         };
 
         fetch(url, {

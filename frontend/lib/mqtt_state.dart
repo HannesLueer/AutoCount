@@ -15,9 +15,9 @@ class MQTTAppState with ChangeNotifier {
   void setReceivedText(String json) {
     Map<String, dynamic> counter = jsonDecode(json);
 
-    _maxCars = counter['MaxCars'].clamp(1, 0x7FFFFFFFFFFFFFFF);
-    _currentCars = counter['CurrentCars'].clamp(0, _maxCars);
-    _siteName = counter['DisplayName'];
+    _maxCars = counter['maxCars'].clamp(1, 0x7FFFFFFFFFFFFFFF);
+    _currentCars = counter['currentCars'].clamp(0, _maxCars);
+    _siteName = counter['displayName'];
 
     notifyListeners();
   }
