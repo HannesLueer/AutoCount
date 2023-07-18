@@ -6,10 +6,12 @@ A camera-based system for automatic car counting in indoor parking facilities
 `python3 -m venv myenv`
 
 ### activate environment
-`source myenv/bin/activate`
+Linux: `source myenv/bin/activate`
+Windows: `. myenv/Scripts/activate`
 
 ### exit environment
-`deactivate`
+Linux: `deactivate`
+Windows: `. deactivate`
 
 ### create requirements.txt
 `pip freeze > requirements.txt`
