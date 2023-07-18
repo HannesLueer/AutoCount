@@ -1,2 +1,101 @@
 \selectlanguage{ngerman}
-\section{Architektur}
+\section{Architektur}\label{ch:Architektur}
+Das im Rahmen dieser Arbeit entwickelte System besteht aus drei Teil-Systemen: dem Sensor, dem Server und der App.
+Dabei wird unter dem Sensor System der Teil angesehen, welcher eine klassische Detektion ersetzen kann.
+Im konkreten Fall besteht dieser Teil aus einem Raspberry Pi 3 und einer Pi Kamera v2.1.
+Der Server stellt die das Bindeglied der Kommunikation zwischen Sensor und App dar.
+Für den Nutzer werden die erfassten Daten in der App dargestellt die vom Server gesendet werden.
+Die gesamte Architektur ist in Abbildung~\ref{fig:Architektur} dargestellt.
+
+\begin{figure}[h]
+    \myImagePos{}
+    \includesvg[inkscapelatex=false,width=\myImageWidth]{Bilder/Architektur_gesamt_2.svg}
+    \caption[Schematische Darstellung der System-Architektur]{Schematische Darstellung der System-Architektur mit ihren einzelnen Systemen (blau), den an diesen angebundenen Komponenten (hellblau) und den zur Kommunikation verwendeten Protokollen (grün). (Quelle: eigene Darstellung)}
+    \label{fig:Architektur}
+\end{figure}
+
+\subsection{Sensor}\label{ch:Architektur_Sensor}
+% TODO:
+
+\subsection{Server}\label{ch:Architektur_Server}
+% - Geschrieben in Go 
+% - Input als HTTP Schnittstelle
+%   - in Produktion: Verwendung von HTTPS
+%       - dann Basic Auth kein Problem 
+%       - jeder Sensor hat Username (site_id) und Passwort das (als Hash) manuell in die SQLite DB eingetragen werden muss
+%       - sowieso Pushen, daher egal ob Publish via MQTT oder HTTP Request (PUT)
+% - Output als HTTP und MQTT 
+%   - Vorteil MQTT: Abonnieren statt Pullen
+%   - MQTT: 
+%       - Topic ist die site_id
+%       - beim Verbinden wird letzter Stand geschickt (retain=true)
+%       - Server ist Broker
+%       - Clients dürfen nur subscriben, nicht publishen; jeder darf verbinden (keine Beschränkung auf IP-Adressen oder Anmeldung mit Passwort)
+% - Anbindung an SQLite DB
+%   - 2 Tabellen
+%   - sites: Speicherung der Zugangsdaten
+%   - counter: Speicherung der Zählerstände
+% - ursprünglicher Eintrag (Maximale Anzahl der Autos (max_cars), Anzeigename des Parkplatzes (display_name), ID (site_id) und Passwort Hash (password_hash)) in DB muss manuell geschehen
+%   - In finalem Produkt wäre ggf. zusätzliche Anwendung für Mitarbeiter notwendig
+
+Der Server wurde in der Programmiersprache Go entwickelt und dient zur Verwaltung und als zentrale Stelle der Kommunikation für die Übermittlung der Zählerwerte von Sensor zum Endnutzer.
+
+Zum Entgegennehmen der Werte vom Sensor wird die HTTP-Schnittstelle \lstinline|PUT /api/v1/c/{site_id}| zur Verfügung gestellt.
+Die Daten werden für diese im HTTP Body in JSON übertragen.
+Das vom Server erwartete JSON Objekt, welches nachfolgenden beispielhaft dargestellt ist, enthält dabei aktuell lediglich das Attribut \lstinline|currentCars|, welches den aktuellen Zählerstand als Ganzzahl enthält.
+
+\lstset{language=json, numbers=none}
+\begin{center}
+    \begin{mylisting}[hbox,enhanced,drop shadow]{Input JSON}
+{
+    "currentCars": 60
+}
+    \end{mylisting}
+\end{center}
+
+Damit diese HTTP-Request zum Ändern des Zählerstandes nicht von jedem ungeschützt verwendet werden kann, ist eine Authentifikation nötig.
+Konkret besitzt hierzu jeder Sensor, der mit dem Server verbunden ist, einen eindeutigen Benutzernamen (\lstinline|site_id|) sowie ein Passwort.
+Zur Authentifizierung mit dem Server wird hierzu die HTTP Basic Authentication genutzt, bei welcher Nutzername (\lstinline|site_id|) und Passwort im HTTP Header als Base64 String kodiert übertragen werden.
+Auf komplexere Authentifizierungsverfahren, wie beispielsweise JSON Web Tokens (JWT) wurde verzichtet, da die gebotenen Vorteile, wie beispielsweise die Möglichkeit zum clientseitigen Ausloggen, das automatische Ablaufen des Tokens oder der Schutz vor Klau des Passworts durch Verwendung des Tokens, in diesem Anwendungsfall als API nicht benötigt werden.
+Zu Entwicklungszwecken wurde bisher auf die Verwendung von einer verschlüsselten Datenübertragung mittels HTTPS verzichtet.
+In einer Produktivumgebung sollte zwingend HTTPS verwendet werden, um eine geschützte Übertragung zu gewährleisten.
+Besonders wichtig ist dies, weil ohne verschlüsselte Verbindung das Passwort abgefangen werden kann.
+
+Als Ausgabeschnittstelle stellt der Server die Daten sowohl über HTTP als auch über MQTT bereit.
+Mittels HTTP kann über die Schnittstelle \lstinline|GET /api/v1/c/{site_id}| das JSON Objekt, welches nachfolgende beispielhaft zu sehen ist, mit den Zählerinformationen abgerufen werden.
+Der Vorteil von MQTT besteht darin, dass Clients Daten abonnieren können, anstatt sie aktiv abzurufen.
+Der Server fungiert als MQTT-Broker und Clients können sich mit ihm verbinden, um Topics zu abonnieren und bei Änderungen dieser die Daten zu empfangen.
+Die \lstinline|site_id| wird hierbei als Topic des MQTT-Protokolls verwendet.
+Sobald vom Sensor, wie zuvor beschrieben mittels HTTP der Zählerstand aktualisiert wird, publisht der Server diesen auf die entsprechende MQTT-Topic.
+Beim Verbinden mit dem MQTT-Server wird der letzte bekannte Zustand an den Client gesendet, da das \lstinline|retain|-Flag auf \lstinline|true| gesetzt ist.
+Somit sind direkt aktuelle Daten verfügbar, ohne dass zunächst eine Änderung durch den Sensor gemeldet werden muss.
+Die Clients haben jedoch keine Berechtigung, Daten zu veröffentlichen (publishen).
+Es gibt daher keine Beschränkungen für die MQTT-Verbindung aufgrund von IP-Adressen oder Anmeldungen mit Passwörtern.
+
+\lstset{language=json, numbers=none}
+\begin{center}
+    \begin{mylisting}[hbox,enhanced,drop shadow]{Output JSON}
+{
+    "id": "HS_Coburg",
+    "displayName": "Parkhaus Hochschule Coburg",
+    "currentCars": 100,
+    "maxCars": 500
+}
+    \end{mylisting}
+\end{center}
+
+Zur Speicherung der relevanten Informationen verwendet der Server eine SQLite-Datenbank mit zwei Tabellen.
+Die erste Tabelle, \lstinline|counter|, speichert die aktuellen Zählerstände sowie gleichbleibende Daten der Sensoren, wie beispielsweise die maximale Anzahl der Autos, die im JSON der Ausgabeschnittstelle vorhanden sind.
+Die zweite Tabelle, \lstinline|sites|, enthält die Zugangsdaten für die einzelnen Sensoren.
+Das Passwort wird hierbei nur als Hash-Wert gespeichert.
+Die Einträge zu Zugangsdaten und Details der Parkplätze müssen zuvor manuell in die Datenbank eingetragen werden.
+Hierzu, wäre es in einem finalen Produkt möglicherweise erforderlich, eine zusätzliche Anwendung für Mitarbeiter bereitzustellen.
+Diese Anwendung könnte eine Benutzeroberfläche bieten, um neue Sensoren hinzuzufügen, ihre Zugangsdaten einzugeben und weitere Konfigurationen vorzunehmen.
+Für den Rahmen des aktuellen Prototyps genügt aber die Oberfläche von Drittanbieter Datenbanksoftware, wie beispielsweise der \textit{DB Browser for SQLite}.
+
+\subsection{App}\label{ch:Architektur_App}
+% TODO:
+% - geschrieben mit Flutter und Dart
+%   --> verschiedene Plattformen (Android, Windows, iOS, macOS, ...)
+% - aboniert via MQTT die Topic (im Prototyp ist Topic hardcodiert; final Auswahl aus Liste, wenn allgemeine App)
+% 
