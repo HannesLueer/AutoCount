@@ -22,7 +22,7 @@ class ObjectDetection:
         self.out_file = out_file
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-    def get_video_from_url(self):
+    def getCompromisedVideo(self):
         """
         Creates a new video streaming object to extract video frame by frame to make prediction on.
         :return: opencv2 video capture object, with lowest quality frame available for video.
@@ -38,10 +38,10 @@ class ObjectDetection:
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
         # Definieren Sie die gewünschte Breite und Höhe für das neue Video (360p)
-        #new_width = 852 
-        #new_height = 480
-        new_width = 1280
-        new_height = 720
+        new_width = 852 
+        new_height = 480
+        #new_width = 1280
+        #new_height = 720
         greyedVideoName = "greyVideo.mp4"
 
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
@@ -134,7 +134,7 @@ class ObjectDetection:
         :return: void
         """
         player = cv2.VideoCapture('HCPS Beispiel grau.mp4')
-        #player = self.get_video_from_url()
+        #player = self.getCompromisedVideo()
         assert player.isOpened()
         x_shape = int(player.get(cv2.CAP_PROP_FRAME_WIDTH))
         y_shape = int(player.get(cv2.CAP_PROP_FRAME_HEIGHT))
