@@ -7,7 +7,7 @@ import numpy as np
 
 # Video Examples
 #cap = cv2.VideoCapture('video_examples/video.avi')
-cap = cv2.VideoCapture('video_examples/cars.mp4')
+cap = cv2.VideoCapture('../../video_examples/HCPS Beispiel.mp4')
 
 
 # minimum contour width
