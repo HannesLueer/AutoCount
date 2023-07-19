@@ -1,8 +1,9 @@
 import torch
 import numpy as np
 import cv2
-#import pafy
 from time import time
+import requests
+import json
 
 
 class ObjectDetection:
@@ -22,14 +23,14 @@ class ObjectDetection:
         self.out_file = out_file
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-    def getCompromisedVideo(self):
+    def getCompromisedVideo(self, filename):
         """
         Creates a new video streaming object to extract video frame by frame to make prediction on.
         :return: opencv2 video capture object, with lowest quality frame available for video.
         """
-        #play = pafy.new(self._URL).streams[-1]
-        #assert play is not None
-        cap = cv2.VideoCapture('HCPS Beispiel.mp4')
+        # play = pafy.new(self._URL).streams[-1]
+        # assert play is not None
+        cap = cv2.VideoCapture(filename)
         # Rufen Sie die Breite und Höhe des ursprünglichen Videos ab
 
         width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -38,21 +39,22 @@ class ObjectDetection:
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
         # Definieren Sie die gewünschte Breite und Höhe für das neue Video (360p)
-        new_width = 852 
+        new_width = 852
         new_height = 480
-        #new_width = 1280
-        #new_height = 720
+        # new_width = 1280
+        # new_height = 720
         greyedVideoName = "greyVideo.mp4"
 
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-        out = cv2.VideoWriter(greyedVideoName, fourcc, fps, (new_width, new_height), isColor=False)
+        out = cv2.VideoWriter(greyedVideoName, fourcc, fps,
+                              (new_width, new_height), isColor=False)
 
         while True:
             # Lesen Sie jedes Frame des ursprünglichen Videos
             ret, frame = cap.read()
             if not ret:
                 break
-            
+
             # Skalieren Sie das Frame auf die gewünschte Größe
             resized_frame = cv2.resize(frame, (new_width, new_height))
 
@@ -64,26 +66,27 @@ class ObjectDetection:
 
             # Zeigen Sie das transformierte Frame an
             cv2.imshow("Transformed Video", gray_frame)
-            
+
             # Warten Sie entsprechend der gewünschten Framerate (10 FPS)
-            #if cv2.waitKey(1) & 0xFF == ord('q'):
-             #   break
-        
+            # if cv2.waitKey(1) & 0xFF == ord('q'):
+            #   break
+
         cap.release()
         out.release()
         cv2.destroyAllWindows()
 
         cap2 = cv2.VideoCapture(greyedVideoName)
-     
+
         return cap2
-        #return cv2.VideoCapture(play.url)
+        # return cv2.VideoCapture(play.url)
 
     def load_model(self):
         """
         Loads Yolo5 model from pytorch hub.
         :return: Trained Pytorch model.
         """
-        model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
+        model = torch.hub.load('ultralytics/yolov5',
+                               'yolov5s', pretrained=True)
         return model
 
     def score_frame(self, frame):
@@ -95,8 +98,16 @@ class ObjectDetection:
         self.model.to(self.device)
         frame = [frame]
         results = self.model(frame)
-        labels, cord = results.xyxyn[0][:, -1].numpy(), results.xyxyn[0][:, :-1].numpy()
-        return labels, cord
+        labels, cord = results.xyxyn[0][:, -
+                                        1].numpy(), results.xyxyn[0][:, :-1].numpy()
+
+        # just return boxes with car label
+        filtered_cords = []
+        for label, coordinates in zip(labels, cord):
+            if label == 2.0:  # label for car
+                filtered_cords.append(coordinates)
+
+        return [2.0]*len(filtered_cords), filtered_cords
 
     def class_to_label(self, x):
         """
@@ -118,14 +129,166 @@ class ObjectDetection:
         x_shape, y_shape = frame.shape[1], frame.shape[0]
         for i in range(n):
             row = cord[i]
-            if(self.class_to_label(labels[i]) == "car"):
-                if row[4] >= 0.2:
-                    x1, y1, x2, y2 = int(row[0]*x_shape), int(row[1]*y_shape), int(row[2]*x_shape), int(row[3]*y_shape)
-                    bgr = (0, 255, 0)
-                    cv2.rectangle(frame, (x1, y1), (x2, y2), bgr, 2)
-                    cv2.putText(frame, self.class_to_label(labels[i]), (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 0.9, bgr, 2)
+            if row[4] >= 0.2:
+                x1, y1, x2, y2 = int(
+                    row[0]*x_shape), int(row[1]*y_shape), int(row[2]*x_shape), int(row[3]*y_shape)
+                bgr = (0, 255, 0)
+                cv2.rectangle(frame, (x1, y1), (x2, y2), bgr, 2)
+                cv2.putText(frame, self.class_to_label(
+                    labels[i]), (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 0.9, bgr, 2)
 
         return frame
+
+    def plot_centers(self, center_coords, frame):
+        """
+        Takes a frame and its center coordinates as input, and plots the center points on to the frame.
+        :param results: contains labels and coordinates predicted by model on the given frame.
+        :param frame: Frame which has been scored.
+        :return: Frame with bounding boxes and labels ploted on it.
+        """
+
+        x_shape, y_shape = frame.shape[1], frame.shape[0]
+        for center_c in center_coords:
+            x, y = center_c
+            x_fs, y_fs = int(x*x_shape), int(y*y_shape)
+            cv2.circle(frame, (x_fs, y_fs), 2, (0, 0, 255), 2)
+
+        return frame
+
+    def get_center_coords(self, rec_cords):
+        center_coords = []
+        for r_cord in rec_cords:
+            x1, y1, x2, y2, _ = r_cord
+            center_x = (x1 + x2) / 2
+            center_y = (y1 + y2) / 2
+            center_coords.append([center_x, center_y])
+        return center_coords
+
+    def get_movement_vectors(self, curr_frame_points, prev_frame_points, prev_movement_vectors):
+        # Initialize an empty dictionary to store the motion vectors for each point
+        movement_vectors = {}
+
+        # Initialize a dictionary to store the distances for each point in the current frame
+        distances = {}
+
+        # Initialize a list to store the already used points from the previous frame
+        used_points = []
+
+        # Calculate the distances for each point in the current frame to all points in the previous frame
+        for curr_point in curr_frame_points:
+            for prev_point in prev_frame_points:
+                curr_point_np = np.array(curr_point)
+                prev_point_np = np.array(prev_point)
+
+                # Calculate the Euclidean distance between the points
+                distance = np.linalg.norm(curr_point_np - prev_point_np)
+
+                # Add the distance to the corresponding point in the dictionary
+                if tuple(curr_point) in distances:
+                    distances[tuple(curr_point)].append(
+                        (tuple(prev_point), distance))
+                else:
+                    distances[tuple(curr_point)] = [
+                        (tuple(prev_point), distance)]
+
+        # Sort the distances for each point in the current frame in ascending order
+        for curr_point, dist_list in distances.items():
+            dist_list.sort(key=lambda x: x[1])
+
+        # Determine the nearest point in the previous frame for each point in the current frame
+        for curr_point, nearest_distance in distances.items():
+            nearest_point, min_distance = nearest_distance[0]
+            if nearest_point in used_points or min_distance > 0.2:
+                continue
+            else:
+                used_points.append(nearest_point)
+
+            # Calculate the motion vector between the current point and the nearest point
+            movement_vector = np.array(curr_point) - nearest_point
+
+            # Add or initialize the motion vector to the corresponding point in the dictionary
+            if tuple(nearest_point) in prev_movement_vectors:
+                movement_vectors[tuple(
+                    curr_point)] = movement_vector + prev_movement_vectors[tuple(nearest_point)]
+            else:
+                movement_vectors[tuple(curr_point)] = movement_vector
+
+        # get ending vectors
+        unused_vectors = {}
+        for p_point, m_vector in prev_movement_vectors.items():
+            if tuple(p_point) not in used_points:
+                unused_vectors[p_point] = m_vector
+
+        return movement_vectors, unused_vectors
+
+    def plot_movement_vectors(self, movement_vectors, frame):
+        for point, vector in movement_vectors.items():
+            end_point = tuple((np.array(point) - vector))
+
+            scaled_end_point = tuple(
+                (np.array(point) * frame.shape[1::-1]).astype(int))
+            scaled_point = tuple(
+                (np.array(end_point) * frame.shape[1::-1]).astype(int))
+
+            cv2.arrowedLine(frame, scaled_point,
+                            scaled_end_point, (255, 0, 0), 2)
+        return frame
+
+    def plot_ending_vectors(self, ending_vectors, frame):
+        for e_v in ending_vectors:
+            for point, vector in e_v.items():
+                end_point = tuple((np.array(point) - vector))
+
+                scaled_end_point = tuple(
+                    (np.array(point) * frame.shape[1::-1]).astype(int))
+                scaled_point = tuple(
+                    (np.array(end_point) * frame.shape[1::-1]).astype(int))
+
+                cv2.arrowedLine(frame, scaled_point,
+                                scaled_end_point, (255, 200, 200), 2)
+        return frame
+
+    def determine_movement_direction(self, movement_vectors, threshold=0.1):
+        car_change = 0
+        for p_point, m_vector in movement_vectors.items():
+            # Check if the y-component of the vector is positive (car movement downwards)
+            if m_vector[1] > threshold:
+                car_change += 1
+            # Check if the y-component of the vector is negative (car movement upwards)
+            elif m_vector[1] < -threshold:
+                car_change += -1
+        return car_change
+
+    def send_put_request(self, site_id, username, password, current_cars):
+        # URL for the PUT request
+        url = f"http://localhost:5000/api/v1/c/{site_id}"
+
+        # JSON-Payload
+        payload = {
+            "currentCars": current_cars
+        }
+
+        # HTTP Basic Auth
+        auth = (username, password)
+
+        # Set header with Content-Type for JSON
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        try:
+            # Send the PUT request
+            response = requests.put(url, data=json.dumps(
+                payload), headers=headers, auth=auth)
+
+            # Check the response status code
+            if response.status_code == 200:
+                print("PUT Request sent successfully!")
+            else:
+                print(
+                    f"Error sending the PUT request. Status code: {response.status_code}")
+        except requests.exceptions.RequestException as e:
+            print(f"Error sending the PUT request: {e}")
 
     def __call__(self):
         """
@@ -133,33 +296,63 @@ class ObjectDetection:
         and write the output into a new file.
         :return: void
         """
-        player = cv2.VideoCapture('HCPS Beispiel grau.mp4')
-        #player = self.getCompromisedVideo()
+        # player = cv2.VideoCapture('HCPS Beispiel grau.mp4')
+        player = cv2.VideoCapture('HCPS Beispiel.mp4')
+        # player = self.getCompromisedVideo('HCPS Beispiel.mp4')
         assert player.isOpened()
         x_shape = int(player.get(cv2.CAP_PROP_FRAME_WIDTH))
         y_shape = int(player.get(cv2.CAP_PROP_FRAME_HEIGHT))
         four_cc = cv2.VideoWriter_fourcc(*"MJPG")
         out = cv2.VideoWriter(self.out_file, four_cc, 20, (x_shape, y_shape))
         i = 0
+        prev_center_coords = []
+        prev_movement_vectors = {}
+        ending_vectors_all = []
+        current_cars = 100
         while True:
             i += 1
             start_time = time()
             ret, frame = player.read()
-            if(i % 6 == 0):    
-                #frame = cv2.resize(frame, (640, 360))
-                #frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            if (i % 6 == 0):
+                # frame = cv2.resize(frame, (640, 360))
+                # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                 assert ret
                 results = self.score_frame(frame)
                 frame = self.plot_boxes(results, frame)
+
+                labels, cords = results
+                center_coords = self.get_center_coords(cords)
+                self.plot_centers(center_coords, frame)
+
+                movement_vectors, ending_vectors = self.get_movement_vectors(
+                    center_coords, prev_center_coords, prev_movement_vectors)
+                self.plot_movement_vectors(movement_vectors, frame)
+
+                ending_vectors_all.append(ending_vectors)
+                self.plot_ending_vectors(ending_vectors_all, frame)
+
+                car_change = self.determine_movement_direction(
+                    ending_vectors, threshold=0.2)
+                print(f"car_change: {car_change}")
+
+                current_cars += car_change
+                if (car_change != 0):
+                    self.send_put_request("HS_Coburg", "HS_Coburg",
+                                          "Test123", current_cars)
+
+                prev_center_coords = center_coords
+                prev_movement_vectors = movement_vectors
+
                 end_time = time()
                 fps = 1/np.round(end_time - start_time, 3)
-                #print(f"Frames Per Second : {fps}")
+                # print(f"Frames Per Second : {fps}")
                 out.write(frame)
 
                 cv2.imshow('video', frame)
-                #cv2.imshow("Difference" , th)
+                # cv2.imshow("Difference" , th)
                 if cv2.waitKey(1) == 27:
                     break
+
 
 # Create a new object and execute.
 a = ObjectDetection("https://www.youtube.com/watch?v=dwD1n7N7EAg")
