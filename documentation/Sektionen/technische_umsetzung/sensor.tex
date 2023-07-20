@@ -1,3 +1,22 @@
 \selectlanguage{ngerman}
 \subsection{Sensor}\label{ch:Umsetzung_Sensor}
 % TODO:
+% - Objekterkennung auf Frames: vortrainierte Modelle
+% - Schwierigkeit: Nicht nur Erkennung einzelner Objekte nötig, sondern Erkennung des Rein- und Rausfahrens der Autos
+%     --> zwei Implementierungen, Verweis auf Tests
+
+\subsubsection{Variante 1: Richtung des Bewegungsvektors}\label{ch:Sensor_v1}
+% TODO:
+% - Grundidee: Erkennen in welche Richtung im Bild (oben oder unten) Auto fährt
+% - Vorgehen: 
+%     - Rechtecke (Eckkoordinaten) der Autos durch Objekterkennung
+%     - Berechnung der Mittelpunkte
+%     - Berechnung der Bewegungsrichtung 
+%         - Für jeden Punkt im aktuellen Frame werden die Distanzen zu den Punkten des vorherigen Frames errechnet
+%         - Der Punkt mit der jeweils kürzesten Distanz wird ausgewählt und mit diesem der Bewegungsvektor errechnet. Falls bereits passender früherer Bewegungsvektor vorhanden, wird Aufaddiert, da nur Gesamtergebnis wichtig  
+%         - Punkte des vorherigen Frames, die für keinen aktuellen Punkt die kürzeste Verbindung waren (weil jetzt weniger Autos im Bild), werden gesucht und deren Bewegungsvektor für Zählung verwendet 
+%     - Anhand der Richtung der y Koordinate es Vektors die Richtung (oben/unten) des Autos bestimmen 
+%     - API Aufruf
+
+\subsubsection{Variante 2: Überschreiten einer Linie}\label{ch:Sensor_v2}
+% TODO:
