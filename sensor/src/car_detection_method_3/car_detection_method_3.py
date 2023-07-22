@@ -25,7 +25,7 @@ def main():
 
     model = YOLO("yolov8n.pt")
     #TODO: classes 2,3,5,7 überprüfen (sollten Auto, Bus, Truck sein)
-    for result in model.track(source="../../video_examples/HCPS Beispiel2.mp4", show=False, stream=True, agnostic_nms=True, vid_stride = 5, classes=[2,3,5,7]):
+    for result in model.track(source="../../video_examples/HCPS Beispiel.mp4",verbose=False, show=False, stream=True, agnostic_nms=True, vid_stride = 5, classes=[2,3,5,7]):
         
         frame = result.orig_img
         detections = sv.Detections.from_yolov8(result)

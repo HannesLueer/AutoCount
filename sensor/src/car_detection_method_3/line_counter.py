@@ -1,6 +1,8 @@
 from typing import Dict
 import cv2
 import numpy as np
+import requests
+import json
 from supervision.detection.core import Detections
 from supervision.draw.color import Color
 from supervision.geometry.core import Point, Rect, Vector
@@ -22,6 +24,7 @@ class LineZone:
         self.tracker_state: Dict[str, bool] = {}
         self.in_count: int = 0
         self.out_count: int = 0
+        self.current_cars: int = 100
 
     def calculate_center(anchors):
         x_sum = 0
@@ -34,56 +37,40 @@ class LineZone:
         center_x = x_sum / num_points
         center_y = y_sum / num_points
         return Point(center_x, center_y)
-    """
-    def trigger_KeyPoints(self, detections: Detections):
-        
-        #Update the in_count and out_count for the keypoints of detections that cross the line.
-        #Attributes:
-        #    detections (Detections): The detections for which to update the counts.
-        
+   
 
-        for xyxy, confidence, class_id, tracker_id in detections:
-            # handle detections with no tracker_id
-            if tracker_id is None:
-                continue
-            # we check if all four anchors of bbox are on the same side of vector
-            x1, y1, x2, y2 = xyxy
-            anchors = [
-                Point(x=x1, y=y1),
-                Point(x=x1, y=y2),
-                Point(x=x2, y=y1),
-                Point(x=x2, y=y2),
-            ]
-            triggers = [self.vector.is_in(point=anchor) for anchor in anchors]
-            # detection is partially in and partially out
+    def send_put_request(self, site_id, username, password, current_cars):
+        # URL for the PUT request
+        url = f"http://localhost:5000/api/v1/c/{site_id}"
 
-            if len(set(triggers)) == 2:
-                continue
+        # JSON-Payload
+        payload = {
+            "currentCars": current_cars
+        }
 
-            tracker_state = triggers[0]
+        # HTTP Basic Auth
+        auth = (username, password)
 
-            # handle new detection
+        # Set header with Content-Type for JSON
+        headers = {
+            "Content-Type": "application/json"
+        }
 
-            if tracker_id not in self.tracker_state:
+        try:
+            # Send the PUT request
+            response = requests.put(url, data=json.dumps(
+                payload), headers=headers, auth=auth)
 
-                self.tracker_state[tracker_id] = tracker_state
-                continue
-
-            # handle detection on the same side of the line
-
-            if self.tracker_state.get(tracker_id) == tracker_state:
-                continue
-
-            self.tracker_state[tracker_id] = tracker_state
-
-            if tracker_state:
-
-                self.in_count += 1
-
+            # Check the response status code
+            if response.status_code == 200:
+                print("PUT Request sent successfully!")
             else:
+                print(
+                    f"Error sending the PUT request. Status code: {response.status_code}")
+        except requests.exceptions.RequestException as e:
+            print(f"Error sending the PUT request: {e}")
 
-                self.out_count += 1
-    """
+
     def trigger(self, detections: Detections):
         """
         Update the in_count and out_count for the center of detections that cross the line.
@@ -114,8 +101,14 @@ class LineZone:
 
             if trigger:
                 self.in_count += 1
+                self.current_cars -= 1
             else:
                 self.out_count += 1
+                self.current_cars += 1
+
+            print("Autos im Parkhaus: " + str(self.current_cars))
+            self.send_put_request("HS_Coburg", "HS_Coburg",
+                                          "Test123", self.current_cars)
 
 
 class LineZoneAnnotator:
