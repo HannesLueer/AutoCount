@@ -5,6 +5,10 @@
 % - Schwierigkeit: Nicht nur Erkennung einzelner Objekte nötig, sondern Erkennung des Rein- und Rausfahrens der Autos
 %     --> zwei Implementierungen, Verweis auf Tests
 
+\subsection{Variante 0: einfache Objekterkennung}
+% - sehr performant
+% - viel zu Ungenau
+
 \subsubsection{Variante 1: Richtung des Bewegungsvektors}\label{ch:Sensor_v1}
 % TODO:
 % - Grundidee: Erkennen in welche Richtung im Bild (oben oder unten) Auto fährt
@@ -20,3 +24,10 @@
 
 \subsubsection{Variante 2: Überschreiten einer Linie}\label{ch:Sensor_v2}
 % TODO:
+% - Grundidee: Einteilen des Videos in zwei Bereiche (horizontal - z. B. Einfahrt des Parkhaus)- bei Änderung des Bereichs -> hoch- oder runterzählen
+% - Vorgehen:
+% 	- Mittelpunkt der Objekterkennung
+%	- jedes Auto mit ID versehen
+%	- schauen in welchem Bereich sich ID befindet
+% 	- Bei Änderung des Bereichs hoch bzw. runterzählen
+%		- API Aufruf
