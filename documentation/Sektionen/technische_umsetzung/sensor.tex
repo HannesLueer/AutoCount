@@ -10,10 +10,18 @@ Auf diesem läuft kontinuierlich eine Software, welche den Kamera-Input verarbei
 Die Herausforderung besteht darin, nicht nur die Erkennung einzelner Fahrzeuge in den einzelnen Frames zu ermöglichen, sondern auch das Ein- und Ausfahren der Fahrzeuge zu identifizieren.
 Um dieses Problem zu lösen, werden zwei verschiedene Implementierungen, welche im Folgenden erklärt werden, entwickelt und in Kapitel~\ref{ch:Test} getestet.
 
-\subsection{Variante 0: einfache Objekterkennung}
+\subsubsection{Variante 0: einfache Objekterkennung}
 % TODO:
 % - sehr performant
-% - viel zu Ungenau
+% - viel zu ungenau
+\textcolor{red}{
+	\begin{itemize}
+		\item sehr performant
+		\item viel zu ungenau
+	\end{itemize}
+}
+
+
 \subsubsection{Variante 1: Richtung des Bewegungsvektors}\label{ch:Sensor_v1}
 % - Grundidee: Erkennen in welche Richtung im Bild (oben oder unten) Auto fährt
 % - Vorgehen: 
@@ -56,3 +64,20 @@ Der interne Zähler des Sensors wird daraufhin entsprechend inkrementiert oder d
 %	- schauen in welchem Bereich sich ID befindet
 % 	- Bei Änderung des Bereichs hoch bzw. runterzählen
 %		- API Aufruf
+
+\textcolor{red}{
+	\begin{itemize}
+		\item Grundidee:
+		      \begin{itemize}
+			      \item Einteilen des Videos in zwei Bereiche (horizontal - z. B. Einfahrt des Parkhaus)
+			      \item bei Änderung des Bereichs -> hoch- oder runterzählen
+		      \end{itemize}
+		\item Vorgehen:
+		      \begin{itemize}
+			      \item Mittelpunkt der Objekterkennung
+			      \item jedes Auto mit ID versehen
+			      \item schauen in welchem Bereich sich ID befindet
+			      \item Bei Änderung des Bereichs hoch bzw. runterzählen --> API Aufruf
+		      \end{itemize}
+	\end{itemize}
+}
