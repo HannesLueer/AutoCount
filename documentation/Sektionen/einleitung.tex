@@ -4,13 +4,34 @@
 % - Problemstellung: aktuelle Situation 
 % - Abwägung verschiedener Möglichkeiten (Lichtschranke, Näherungssensor für jeden Parkplatz, Dreh-Sensor an Schranke) und Probleme dieser (Menschen und Radfahrer könnten auch erkannt werden, Bewegungsrichtung unklar, wenn auf falscher Seite gefahren wird, Näherungssensoren für jeden Parkplatz sehr teuer)
 % - Entschluss: Kamera-basierte Lösung notwendig 
-Das Parkhaus an der Hochschule Coburg, welches direkt am Campus positioniert ist, umfasst 530 Parkplätze für Studierende und Mitarbeiter. Dabei sind die Parkmöglichkeiten für Studenten und Mitarbeiter durch eine Schranke getrennt. Die Haupteinfahrt ist jedoch für beide Parkflächen die selbe. Es gibt außerdem einen Parkplatz in der Sonneberger Straße. Dieser ist jedoch aufgrund der Lage für Autofahrer unaatraktiver als das Parkhaus. Im vergangenen Wintersemester (2022/23) gab es 4890 immatrikulierte Studenten und 518 Mitarbeiter. 
+Das Parkhaus an der Hochschule Coburg, welches direkt am Campus positioniert ist, umfasst 530 Parkplätze für Studierende und Mitarbeiter.
+Dabei sind die Parkmöglichkeiten für Studenten und Mitarbeiter durch eine Schranke getrennt.
+Die Haupteinfahrt ist jedoch für beide Parkflächen die selbe.
+Es gibt außerdem einen Parkplatz in der Sonneberger Straße.
+Dieser ist jedoch aufgrund der Lage für Autofahrer unaatraktiver als das Parkhaus. Im vergangenen Wintersemester (2022/23) gab es 4890 immatrikulierte Studenten und 518 Mitarbeiter.
 
-Wenn man als Student eine Vorlesung zu den Stoßzeiten besuchen möchte und auf das Auto angewiesen ist, stellt man häufig fest, dass die Auslastungs-Anzeige des Parhauses "BESETZT" darstellt. Das Problem dieser Anzeige ist, dass man sich nie sicher sein kann, was diese Anzeige nun genau darstellt. Ist gar kein Parkplatz mehr frei, sind nur noch wenige frei oder wird sogar eine Fehlinformation angezeigt? Häufig lassen sich trotz der Anzeige, dass das Parkhaus besetzt wäre, noch freie Parkplätze finden.
+Wenn man als Student eine Vorlesung zu den Stoßzeiten besuchen möchte und auf das Auto angewiesen ist, stellt man häufig fest, dass die Auslastungs-Anzeige des Parhauses "BESETZT" darstellt.
+Das Problem dieser Anzeige ist, dass man sich nie sicher sein kann, was diese Anzeige nun genau darstellt.
+Ist gar kein Parkplatz mehr frei, sind nur noch wenige frei oder wird sogar eine Fehlinformation angezeigt?
+Häufig lassen sich trotz der Anzeige, dass das Parkhaus besetzt wäre, noch freie Parkplätze finden.
 
-Im Rahmen des Faches "Hardware Cyber Physischer Systeme" soll eine Möglichkeit gefunden werden, eine exakte Anzeige der Parkhausbelegung umzusetzen. Dafür soll - wie in größeren Parkhäusern üblich - dargestellt werden, wie viele Parkplätze noch frei sind. Dafür werden verschiedene Ansätze betrachtet. Zum einen wäre eine Umsetzung denkbar, bei welcher am Eingang des Parkhauses eine Lichtschranke installiert wird. Diese soll jeweils Autos zählen, welche sich über die Einfahrt in das Parkhaus hinein- bzw. durch die Ausfahrt hinausbewegen. Ein großes Problem bei diesem Ansätz ist, dass das System potentiell jedes Objekt oder jede Person detektieren würde. Somit wäre die Anzeige der Parkhausbelegung fehlerhaft. Außerdem wäre eine Umsetzung denkbar, bei welcher auf jedem Parkplätz ein Näherungssensor angebracht wird, welcher erfasst, ob sich auf dem jeweiligen Parkplatz ein Objekt befindet oder nicht. Diese Konzept würde vermutlich sehr gut funktionieren, bringt jedoch einen hohen Kostenaufwand mit sich, weswegen diese Variante verworfen wird.
+Im Rahmen des Faches "Hardware Cyber Physischer Systeme" soll eine Möglichkeit gefunden werden, eine exakte Anzeige der Parkhausbelegung umzusetzen.
+Dafür soll - wie in größeren Parkhäusern üblich - dargestellt werden, wie viele Parkplätze noch frei sind.
+Dafür werden verschiedene Ansätze betrachtet.
+Zum einen wäre eine Umsetzung denkbar, bei welcher am Eingang des Parkhauses eine Lichtschranke installiert wird.
+Diese soll jeweils Autos zählen, welche sich über die Einfahrt in das Parkhaus hinein- bzw. durch die Ausfahrt hinausbewegen.
+Ein großes Problem bei diesem Ansätz ist, dass das System potentiell jedes Objekt oder jede Person detektieren würde.
+Somit wäre die Anzeige der Parkhausbelegung fehlerhaft.
+Außerdem wäre eine Umsetzung denkbar, bei welcher auf jedem Parkplätz ein Näherungssensor angebracht wird, welcher erfasst, ob sich auf dem jeweiligen Parkplatz ein Objekt befindet oder nicht.
+Diese Konzept würde vermutlich sehr gut funktionieren, bringt jedoch einen hohen Kostenaufwand mit sich, weswegen diese Variante verworfen wird.
 
-Als potentiell beste Lösung hat sich eine Kamera-basierte Umsetzung herausgestellt. Bei dieser Idee wird eine Kamera an der Einfahrt des Parkhauses platziert. Die Aufnahmen werden mit Objekt-Erkennung analysiert. Dabei werden lediglich Autos betrachtet, welche in das Parkhaus hinein bzw. aus dem Parkhaus hinaus fahren. Durch die Objekterkennung kann ausgeschlossen werden, dass ungewünschte Objekte oder Personen vom System erfasst werden. 
+Als potentiell beste Lösung hat sich eine Kamera-basierte Umsetzung herausgestellt.
+Bei dieser Idee wird eine Kamera an der Einfahrt des Parkhauses platziert.
+Die Aufnahmen werden mit Objekt-Erkennung analysiert.
+Dabei werden lediglich Autos betrachtet, welche in das Parkhaus hinein bzw. aus dem Parkhaus hinaus fahren.
+Durch die Objekterkennung kann ausgeschlossen werden, dass ungewünschte Objekte oder Personen vom System erfasst werden.
 
-Die Parkplätze der Mitarbeiter müssen separat gezählt werden. Eine Möglichkeit wäre die Aktivität der Schranke mit einem Neigungssensor zu erfassen. Es kann jedoch potentiell dazu kommen, dass eine Schranke geöffnet wird und kein Auto durchfährt. Deshalb wird für die Zählung der Auslastung der Mitarbeiterparkplätze die selbe Variante verwendet, welche für die Erfassung der Studentenparkplätze vorgeschlagen wurde. 
-
+Die Parkplätze der Mitarbeiter müssen separat gezählt werden.
+Eine Möglichkeit wäre die Aktivität der Schranke mit einem Neigungssensor zu erfassen.
+Es kann jedoch potentiell dazu kommen, dass eine Schranke geöffnet wird und kein Auto durchfährt.
+Deshalb wird für die Zählung der Auslastung der Mitarbeiterparkplätze die selbe Variante verwendet, welche für die Erfassung der Studentenparkplätze vorgeschlagen wurde.
