@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 import cv2
-from time import time
+import time
 import requests
 import json
 
@@ -297,7 +297,7 @@ class ObjectDetection:
         :return: void
         """
         # player = cv2.VideoCapture('HCPS Beispiel grau.mp4')
-        player = cv2.VideoCapture('HCPS Beispiel.mp4')
+        player = cv2.VideoCapture('../../video_examples/HCPS Beispiel2.mp4')
         # player = self.getCompromisedVideo('HCPS Beispiel.mp4')
         assert player.isOpened()
         x_shape = int(player.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -308,15 +308,20 @@ class ObjectDetection:
         prev_center_coords = []
         prev_movement_vectors = {}
         ending_vectors_all = []
-        current_cars = 100
+        current_cars = 0
+        times = []
         while True:
             i += 1
-            start_time = time()
+            start_time = time.time()
             ret, frame = player.read()
+
+            if not ret:
+                break
+
             if (i % 6 == 0):
                 # frame = cv2.resize(frame, (640, 360))
                 # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                assert ret
+
                 results = self.score_frame(frame)
                 frame = self.plot_boxes(results, frame)
 
@@ -333,9 +338,9 @@ class ObjectDetection:
 
                 car_change = self.determine_movement_direction(
                     ending_vectors, threshold=0.2)
-                print(f"car_change: {car_change}")
 
                 current_cars += car_change
+                print(f"current_cars: {current_cars}")
                 if (car_change != 0):
                     self.send_put_request("HS_Coburg", "HS_Coburg",
                                           "Test123", current_cars)
@@ -343,15 +348,19 @@ class ObjectDetection:
                 prev_center_coords = center_coords
                 prev_movement_vectors = movement_vectors
 
-                end_time = time()
-                fps = 1/np.round(end_time - start_time, 3)
-                # print(f"Frames Per Second : {fps}")
                 out.write(frame)
 
                 cv2.imshow('video', frame)
                 # cv2.imshow("Difference" , th)
                 if cv2.waitKey(1) == 27:
                     break
+
+                end_time = time.time()
+                times.append(end_time - start_time)
+
+        with open('../../../demo/test_times/frame_times_method_2.txt', 'w') as file:
+            for time_val in times:
+                file.write(str(time_val) + '\n')
 
 
 # Create a new object and execute.

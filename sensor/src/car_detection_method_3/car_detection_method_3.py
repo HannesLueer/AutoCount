@@ -1,14 +1,15 @@
-#This Method uses YOLOv8 for Object Detection
+# This Method uses YOLOv8 for Object Detection
 
 import cv2
 from ultralytics import YOLO
 import line_counter as lc
 import supervision as sv
 import numpy as np
+import time
 
 
-#LINE_START = sv.Point(320, 0)
-#LINE_END = sv.Point(320, 480)
+# LINE_START = sv.Point(320, 0)
+# LINE_END = sv.Point(320, 480)
 
 LINE_START = sv.Point(0, 200)
 LINE_END = sv.Point(1280, 220)
@@ -22,18 +23,19 @@ def main():
         text_thickness=1,
         text_scale=0.5
     )
+    times = []
 
     model = YOLO("yolov8n.pt")
-    #TODO: classes 2,3,5,7 überprüfen (sollten Auto, Bus, Truck sein)
-    for result in model.track(source="../../video_examples/HCPS Beispiel.mp4",verbose=False, show=False, stream=True, agnostic_nms=True, vid_stride = 5, classes=[2,3,5,7]):
-        
+    # TODO: classes 2,3,5,7 überprüfen (sollten Auto, Bus, Truck sein)
+    for result in model.track(source="../../video_examples/HCPS Beispiel2.mp4", verbose=False, show=False, stream=True, agnostic_nms=True, vid_stride=5, classes=[2, 3, 5, 7]):
+        start_time = time.time()
         frame = result.orig_img
         detections = sv.Detections.from_yolov8(result)
 
         if result.boxes.id is not None:
             detections.tracker_id = result.boxes.id.cpu().numpy().astype(int)
-        
-        #detections = detections[(detections.class_id != 60) & (detections.class_id != 0)]
+
+        # detections = detections[(detections.class_id != 60) & (detections.class_id != 0)]
 
         labels = [
             f"{tracker_id} {model.model.names[class_id]} {confidence:0.2f}"
@@ -42,7 +44,7 @@ def main():
         ]
 
         frame = box_annotator.annotate(
-            scene=frame, 
+            scene=frame,
             detections=detections,
             labels=labels
         )
@@ -54,6 +56,12 @@ def main():
 
         if (cv2.waitKey(30) == 27):
             break
+        end_time = time.time()
+        times.append(end_time - start_time)
+
+    with open('../../../demo/test_times/frame_times_method_3.txt', 'w') as file:
+        for time_val in times:
+            file.write(str(time_val) + '\n')
 
 
 if __name__ == "__main__":
