@@ -14,12 +14,15 @@ Um dieses Problem zu lösen, werden zwei verschiedene Implementierungen, welche 
 % TODO:
 % - sehr performant
 % - viel zu ungenau
-\textcolor{red}{
-	\begin{itemize}
-		\item sehr performant
-		\item viel zu ungenau
-	\end{itemize}
-}
+Zunächst wird versucht eine Objekterkennung mit dem OpenCV-Framework umzustzen.
+Das Verfahren verwendet Computer-Vision-Techniken wie Hintergrundsubtraktion und Konturenerkennung, um Fahrzeuge in einem Video zu erkennen und zu zählen.
+Dabei werden Bewegungsunterschiede zwischen Frames erkannt und die Konturen bewegter Objekte identifiziert, um potenzielle Fahrzeuge zu identifizieren. 
+Die Anzahl der Fahrzeuge wird basierend auf der Position der Konturzentren ermittelt.
+Nach den ersten Tests stellt sich das Verfahren als unbrauchbar dar.
+Das Verfahren ist zwar sehr performant, sodass bis zu 30 Bilder pro Sekunde verarbeitet werden können, die Genauigkeit ist für die Umsetzung des Projektes jedoch zu gering.
+Teilweise werden einzelne Fahrzeuge als mehrere gezählt.
+Weiterhin gibt es mehrere Objekte und Personen, die von dieser Methode fälschlicherweise als Fahrzeug erkannt werden.
+Deshalb wird diese Variante nicht weiter verfolgt und verbessert.
 
 
 \subsubsection{Variante 1: Richtung des Bewegungsvektors}\label{ch:Sensor_v1}
@@ -65,19 +68,25 @@ Der interne Zähler des Sensors wird daraufhin entsprechend inkrementiert oder d
 % 	- Bei Änderung des Bereichs hoch bzw. runterzählen
 %		- API Aufruf
 
-\textcolor{red}{
-	\begin{itemize}
-		\item Grundidee:
-		      \begin{itemize}
-			      \item Einteilen des Videos in zwei Bereiche (horizontal - z. B. Einfahrt des Parkhaus)
-			      \item bei Änderung des Bereichs -> hoch- oder runterzählen
-		      \end{itemize}
-		\item Vorgehen:
-		      \begin{itemize}
-			      \item Mittelpunkt der Objekterkennung
-			      \item jedes Auto mit ID versehen
-			      \item schauen in welchem Bereich sich ID befindet
-			      \item Bei Änderung des Bereichs hoch bzw. runterzählen --> API Aufruf
-		      \end{itemize}
-	\end{itemize}
-}
+Die grundlegende Idee des Algorithmus besteht darin, Fahrzeuge in den Frames eines Videos mithilfe von YOLOv8 zu identifizieren und dann ihre Bewegung in Bezug auf eine festgelegte Linie zu verfolgen, um die Fahrtrichtung zu bestimmen.
+Die Linie wird dabei auf horizontal über der Einfahrt des Parkhauses festgelegt, wie in Abbildung \ref{fig:Variante2} zu sehen ist.
+Somit wird das Bild in zwei Zonen geteilt werden.
+Ändert sich die Position eines Autos von der oberen in die untere Zone des Bildes, so wird die Auslastungs-Anzeige um eins verringert, da sich nun ein Auto mehr im Parkhaus befindet.
+Geschieht eine Änderung der Positon von unten nach oben, so wird die Anzeige um eins erhöht.
+
+\begin{figure}[h]
+	\myImagePos{}
+	\includegraphics[width=\myImageWidth]{Bilder/Method3_Beispiel.png}
+	\caption[Variante 2 Beispiel]{Beispiel Fahrzeugerkennung Variante 2 (Quelle: eigene Darstellung)}
+	\label{fig:Variante2}
+\end{figure}
+
+Es wird YOLOv8 eingesetzt, um die Fahrzeuge in den einzelnen Frames des Videos zu erkennen.
+Der Vorteil des Frameworks ist es, dass es Objekten IDs zuordnen kann.
+Somit ist eine eindeutige Zuordnung eines Autos über mehrere Frames hinweg möglich.
+Die Zuordnung einer ID zu einem konkreten Autos über eine gewisse Dauer geschieht über verschiedene Merkmale des Objektes, wie die Eckpunkte der Objekterkennung, die Geschwindigkeit des Autos oder die Veränderung der Zuverlässigkeitswerte des Algorithmus.
+Die erkannten Fahrzeuge werden durch ihre Eckkoordinaten repräsentiert.
+Der daraus errechnete Mittelpunkt gibt Aufschluss über die Position des Fahrzeuges.
+
+Der Algorithmus nutzt die erfassten Zählerwerte, um die aktuelle Auslastung des Parkhauses an einen Server zu übertragen.
+Dazu wird eine HTTP PUT-Request im JSON-Format verwendet, um die Zählerwerte an den Server zu senden und die Fahrzeugbewegungen zu protokollieren.
