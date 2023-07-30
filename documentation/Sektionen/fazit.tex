@@ -1,6 +1,5 @@
 \selectlanguage{ngerman}
 \section{Fazit}\label{ch:Fazit}
-% TODO:
 % Zukünftig:
 % - HTTPS
 % - Anwendung für Datenbank für Mitarbeiter
@@ -8,14 +7,28 @@
 % - selbes System für die Mitarbeiterparkplätze --> diese vom Zähler abziehen
 % - separates Zählsystem für Mitarbeiter anbieten
 
-\textcolor{red}{
-	Zukünftig:
-	\begin{itemize}
-		\item HTTPS
-		\item interne Anwendung statt direktem Datenbankzugriff für Anlegen der sites
-		\item Auswahl der Parkplätze in App; andere Darstellung in App, bei großflächigem Einsatz beispielsweise auf Karte
-		\item selbes System für die Mitarbeiterparkplätze --> diese vom Zähler abziehen
-		\item separates Zählsystem für Mitarbeiter anbieten
-	\end{itemize}
-}
+Die Anwendung und der Test des entwickelten Fahrzeugzählsystems wurden in einem realen Parkhaus durchgeführt, wobei sich das System als zuverlässig in der Zählung der Fahrzeuge erwies.
+Der Vergleich der beiden implementierten Zählverfahren ergab, dass beide Verfahren eine höhere Genauigkeit und Robustheit aufweisen, Verfahren 2 jedoch effizienter ist.
+Die Ergebnisse dieser Tests sind vielversprechend und zeigen das Potenzial des Systems für den praktischen Einsatz in der Parkhausauslastungsmessung auf.
 
+Für eine Weiterentwicklung des Systems wurden folgende Aspekte identifiziert.
+
+Um die Sicherheit und den Datenschutz zu gewährleisten, sollte eine Umstellung auf HTTPS erfolgen.
+Dies würde die Übertragung der Daten verschlüsseln und die Vertraulichkeit der Informationen gewährleisten.
+Dadurch wird sichergestellt, dass die erfassten Messdaten und vor allem Zugangsdaten vor unbefugtem Zugriff geschützt sind.
+
+Im aktuellen Prototypen müssen Parkhäuser initial manuell in der Datenbank angelegt werden.
+Eine für den großflächigen Einsatz nötige Erweiterung wäre Implementierung eines Systems, über welches Mitarbeiter bequem und fehlerfrei neue Stationen anlegen können.
+
+Eine Weiterentwicklung der Anwendung könnte eine dynamische Parkplatzauswahl in der App sein.
+Statt fester Standortzuweisungen könnten die verfügbaren Parkplätze und Parkhäuser in der App angezeigt werden, wobei die Darstellung bei großflächigem Einsatz auf einer Karte erfolgen könnte.
+Dies würde den Benutzern ermöglichen, freie Parkplätze leichter zu finden und die Effizienz des Parkplatzmanagements zu steigern.
+Außerdem wäre so nicht für jedes Parkhaus eine eigene App nötig.
+
+Die Einbindung der Mitarbeiterparkplätze in das Zählsystem wäre eine sinnvolle Erweiterung.
+In der Umsetzung des Prototyps wird nicht beachtet, dass innerhalb des Parkhauses ein separater Bereich für Mitarbeiter der Hochschule existiert.
+Durch Anbringung eines zweiten Sensors und Subtrahieren der Zählergebnisse der Mitarbeiterparkplätze von den Gesamtzählergebnissen kann auch eine Differenzierung zwischen den Bereichen vorgenommen werden.
+
+Zusammenfassend eröffnet die entwickelte Fahrzeugzählungsanwendung eine Vielzahl von Möglichkeiten für zukünftige Verbesserungen und Erweiterungen.
+Die Kombination dieser Aspekte könnte das Fahrzeugzählsystem zu einem sinnvollen Werkzeug für ein effizientes und intelligentes Parkplatzmanagement machen.
+Bereits der Prototyp konnte zeigen, wie ohne den Einsatz spezieller Hardware eine Zählung ermöglicht wird.
