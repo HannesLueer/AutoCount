@@ -1,15 +1,67 @@
 \selectlanguage{ngerman}
 \section{Anwendung und Test}\label{ch:Test}
-% TODO:
 % - Installation in Parkhaus und Aufzeichnung
 %   - Zu Testzwecken separat von Erkennung
 % - Allgemeine Erklärung zur Nutzung des Systems
 % - Vergleich der zwei Zählverfahren
 
-\textcolor{red}{
-	\begin{itemize}
-		\item Installation in Parkhaus und Aufzeichnung (Zu Testzwecken separat von Erkennung)
-		\item Allgemeine Erklärung zur Nutzung des Systems
-		\item Vergleich der zwei Zählverfahren
-	\end{itemize}
-}
+In diesem Kapitel wird die Anwendung und der Test des entwickelten Systems vorgestellt.
+Zunächst wird die allgemeine Nutzung des Systems erläutert.
+Anschließend werden die Installation des Systems im Hochschul-Parkhaus und die Aufzeichnung von Testdaten beschrieben, sowie ein Vergleich der beiden entwickelten Zählverfahren vorgenommen.
+
+\subsection{Nutzung des Systems}
+Das entwickelte System zur Fahrzeugzählung bietet eine einfache und benutzerfreundliche Anwendung.
+Für den Betreiber des Parkhauses ist es lediglich nötig die Sensoreinheit an der Ein- und Ausfahrt des Parkhauses zu montieren und vor Strom und eine Internetverbindung zu sorgen.
+Nachdem die Authentifizierungsdaten hinterlegt wurden, kann direkt mit der Zählung begonnen werden.
+Auf der Seite des Nutzers wird aufgrund der plattformübergreifenden App eine Installation und Nutzung auf verschiedenen Endgeräten, darunter Android, Windows, iOS und macOS, ermöglicht.
+Die Zählergebnisse werden dabei in Echtzeit angezeigt und können überwacht werden.
+
+\subsection{Installation und Testaufzeichnung}
+Zur Überprüfung der Genauigkeit des entwickelten Systems wurde ein Test durchgeführt.
+Das System wurde dabei im Parkhaus der Hochschule Coburg installiert, um statt der eigentlichen live Fahrzeugerkennung zunächst ein Video aufzunehmen, welches als Vergleichsmaterial der Verfahren genutzt werden kann.
+Auch, weil zum aktuellen Zeitpunkt im Parkhaus keine Internetverbindung besteht, wurden alle weiteren Tests auf Basis des aufgezeichneten Videomaterials durchgeführt.
+Technisch ergibt sich hierdurch kein Unterschied im Vergleich zur Echtzeitanalyse, da die verwendeten Verfahren jeweils nur auf den aktuellen Frame zurückgreifen.
+
+\subsection{Vergleich der beiden Zählverfahren}
+Im Rahmen der Arbeit wurden zwei verschiedene Zählverfahren (siehe Kapitel~\ref{ch:Umsetzung_Sensor}) entwickelt und implementiert.
+Um zu entscheiden, welches dieser Verfahren besser ist, wurden diese auf Korrektheit und Effizienz verglichen.
+% Korrektheit:
+Hierzu wurde ein 10 Minuten langer Ausschnitt der Aufzeichnung von beiden Verfahren analysiert und mit der manuellen Zählung der Autos verglichen.
+Dabei ergaben sich folgende Werte.
+
+\begin{table}[h]
+	\centering
+	\begin{tblr}{
+			colspec={lrrr},
+			row{even}={bg=gray!5},
+			row{odd}={bg=gray!20},
+			row{1}={bg=black!80,fg=white},
+		}
+		\centering
+		Verfahren                                & Autos rein & Autos raus & Autos gesamt \\
+		\hline
+		Manuelle Zählung                         & 10         & 4          & 6            \\
+		Verfahren 1 (Kapitel~\ref{ch:Sensor_v1}) & 10         & 4          & 6            \\
+		Verfahren 2 (Kapitel~\ref{ch:Sensor_v2}) & 10         & 4          & 6            \\
+	\end{tblr}
+	\caption{Ergebnisse des Tests}\label{tab:TestErgebnisse}
+\end{table}
+
+Demnach erzielen beide Verfahren korrekte Ergebnisse.
+Während des Testvideos fuhren außerdem drei Autos durch den Bildausschnitt, die nicht ins Parkhaus fuhren oder aus dem Parkhaus kamen.
+Diese wurden jeweils korrekterweise von den Verfahren nicht beachtet.
+
+% Effizienz:
+Auch die Effizienz der Verfahren wurde verglichen.
+Hierzu wurde die Zeit ermittelt, die jedes Verfahren pro Frame zur Verarbeitung benötigt.
+Die Ergebnisse des 10-minütigen Tests wurden als Boxplot in Abbildung~\ref{fig:frameTimes_Boxplots} dargestellt.
+Dabei ist ersichtlich, dass Verfahren 2 effizienter ist und daher weniger Zeit pro Frame benötigt.
+Auch ist die Varianz bei Variante 1 höher.
+Aus diesen Gesichtspunkten wird sich für Variante 2 entschieden.
+
+\begin{figure}[h]
+	\myImagePos{}
+	\includesvg[inkscapelatex=false,width=\myImageWidth]{Bilder/frame_times_pc.svg}
+	\caption[Darstellung der Boxplots der benötigten Zeit pro Frame für die zwei entwickelten Verfahren]{Darstellung der Boxplots der benötigten Zeit pro Frame für die zwei entwickelten Verfahren (Quelle: eigene Darstellung)}
+	\label{fig:frameTimes_Boxplots}
+\end{figure}
