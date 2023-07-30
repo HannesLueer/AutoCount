@@ -10,13 +10,13 @@ Auf diesem läuft kontinuierlich eine Software, welche den Kamera-Input verarbei
 Die Herausforderung besteht darin, nicht nur die Erkennung einzelner Fahrzeuge in den einzelnen Frames zu ermöglichen, sondern auch das Ein- und Ausfahren der Fahrzeuge zu identifizieren.
 Um dieses Problem zu lösen, werden zwei verschiedene Implementierungen, welche im Folgenden erklärt werden, entwickelt und in Kapitel~\ref{ch:Test} getestet.
 
-\subsubsection{Variante 0: einfache Objekterkennung}
+\subsubsection{Variante 0: einfache Objekterkennung}\label{ch:Sensor_v0}
 % TODO:
 % - sehr performant
 % - viel zu ungenau
 Zunächst wird versucht eine Objekterkennung mit dem OpenCV-Framework umzustzen.
 Das Verfahren verwendet Computer-Vision-Techniken wie Hintergrundsubtraktion und Konturenerkennung, um Fahrzeuge in einem Video zu erkennen und zu zählen.
-Dabei werden Bewegungsunterschiede zwischen Frames erkannt und die Konturen bewegter Objekte identifiziert, um potenzielle Fahrzeuge zu identifizieren. 
+Dabei werden Bewegungsunterschiede zwischen Frames erkannt und die Konturen bewegter Objekte identifiziert, um potenzielle Fahrzeuge zu identifizieren.
 Die Anzahl der Fahrzeuge wird basierend auf der Position der Konturzentren ermittelt.
 Nach den ersten Tests stellt sich das Verfahren als unbrauchbar dar.
 Das Verfahren ist zwar sehr performant, sodass bis zu 30 Bilder pro Sekunde verarbeitet werden können, die Genauigkeit ist für die Umsetzung des Projektes jedoch zu gering.
