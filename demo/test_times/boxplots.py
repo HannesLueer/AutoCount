@@ -14,8 +14,8 @@ def komma_formatter(x, pos):
 
 
 # Dateien einlesen
-data_file1 = "frame_times_method_2.txt"
-data_file2 = "frame_times_method_3.txt"
+data_file1 = "frame_times_method_2_pc.txt"
+data_file2 = "frame_times_method_3_pc.txt"
 
 data1 = read_data(data_file1)
 data2 = read_data(data_file2)
@@ -40,5 +40,5 @@ ax2.set_xticks([])
 ax1.yaxis.set_major_formatter(ticker.FuncFormatter(komma_formatter))
 ax2.yaxis.set_major_formatter(ticker.FuncFormatter(komma_formatter))
 
-plt.savefig('frame_times.svg', format='svg')
+plt.savefig('frame_times_pc.svg', format='svg')
 plt.show()
