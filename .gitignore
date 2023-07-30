@@ -1,2 +1,4 @@
 /video/*
 *.pt
+!video/AutoCount.mp4
+!video/video_quellen.txt
