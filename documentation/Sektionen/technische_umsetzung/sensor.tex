@@ -48,11 +48,20 @@ Die Berechnung der Bewegungsrichtung auf Basis der Mittelpunkte erfolgt in mehre
 Hierfür werden für jeden Punkt im aktuellen Frame die Distanzen zu den Punkten des vorherigen Frames ermittelt.
 Hiervon wird jeweils der Punkt mit der kürzesten Distanz ausgewählt und der Bewegungsvektor zwischen den zwei Punkten berechnet.
 Sollte bereits ein passender Bewegungsvektor für den Punkt aus vorherigen Frames vorhanden sein, wird dieser Vektor aufaddiert, da nur das Gesamtergebnis relevant ist.
+Der hieraus resultierende Vektor zeigt also von der ersten Sichtung des Autos zu seiner aktuellen Position und ist in Abbildung~\ref{fig:Variante1} blau dargestellt.
+
+\begin{figure}[h]
+	\myImagePos{}
+	\includegraphics[width=\myImageWidth]{Bilder/Methode2_Beispiel.png}
+	\caption[Fahrzeugerkennung Variante 1 Beispiel]{Beispiel der Fahrzeugerkennung mit Variante 1 (Quelle: eigene Darstellung)}
+	\label{fig:Variante1}
+\end{figure}
 
 Zur Zählung werden die errechneten Bewegungsvektoren verwendet, wenn das entsprechende Auto das Kamerasichtfeld verlassen hat.
 Das ist der Fall, wenn Punkte des vorherigen Frames für keinen Punkt im aktuellen Frame die kürzeste Verbindung darstellten, weil jetzt weniger Autos im Bild zu sehen sind als im vorherigen Frame.
 In diesem Fall werden die zuvor berechneten Bewegungsvektoren der nicht zugeordneten Punkte für die Zählung verwendet.
 Selbst wenn zwischen den Frames ein neues Auto in den Bildausschnitt fährt, während ein anderes ihn verlässt, stellt dies kein Problem dar, weil dies Aufgrund eines Schwellwerts nur für Autos passieren kann, die in entgegengesetzte Richtungen fahren und sich die aufaddierten Bewegungsvektoren folglich ausgleichen, sodass der Zählerwert ebenso unverändert bleibt.
+In Abbildung~\ref{fig:Variante1} ist in Weiß der Vektor des vorherigen Autos zu sehen.
 
 Die Richtung des Fahrzeugs wird anhand der y-Koordinate des Bewegungsvektors bestimmt.
 Wenn die y-Koordinate des Vektors positiv ist, fährt das Fahrzeug nach unten, andernfalls fährt es nach oben, was durch die bereits erwähnte Vereinfachung einen Rückschluss auf die tatsächliche Fahrtrichtung des Autos ermöglicht.
@@ -76,7 +85,7 @@ Geschieht eine Änderung der Positon von unten nach oben, so wird die Anzeige um
 \begin{figure}[h]
 	\myImagePos{}
 	\includegraphics[width=\myImageWidth]{Bilder/Method3_Beispiel.png}
-	\caption[Variante 2 Beispiel]{Beispiel Fahrzeugerkennung Variante 2 (Quelle: eigene Darstellung)}
+	\caption[Fahrzeugerkennung Variante 2 Beispiel]{Beispiel der Fahrzeugerkennung mit Variante 2 (Quelle: eigene Darstellung)}
 	\label{fig:Variante2}
 \end{figure}
 
