@@ -58,7 +58,7 @@ Der hieraus resultierende Vektor zeigt also von der ersten Sichtung des Autos zu
 \end{figure}
 
 Zur Zählung werden die errechneten Bewegungsvektoren verwendet, wenn das entsprechende Auto das Kamerasichtfeld verlassen hat.
-Das ist der Fall, wenn Punkte des vorherigen Frames für keinen Punkt im aktuellen Frame die kürzeste Verbindung darstellten, weil jetzt weniger Autos im Bild zu sehen sind als im vorherigen Frame.
+Das ist der Fall, wenn Punkte des vorherigen Frames für keinen Punkt im aktuellen Frame die kürzeste Verbindung darstellen, weil jetzt weniger Autos im Bild zu sehen sind als im vorherigen Frame.
 In diesem Fall werden die zuvor berechneten Bewegungsvektoren der nicht zugeordneten Punkte für die Zählung verwendet.
 Selbst wenn zwischen den Frames ein neues Auto in den Bildausschnitt fährt, während ein anderes ihn verlässt, stellt dies kein Problem dar, weil dies aufgrund eines Schwellwerts nur für Autos passieren kann, die in entgegengesetzte Richtungen fahren und sich die aufaddierten Bewegungsvektoren folglich ausgleichen, sodass der Zählerwert ebenso unverändert bleibt.
 In Abbildung~\ref{fig:Variante1} ist in Weiß der Vektor des vorherigen Autos zu sehen.
@@ -89,8 +89,8 @@ Geschieht eine Änderung der Position von unten nach oben, so wird die Anzeige u
 	\label{fig:Variante2}
 \end{figure}
 
-Es wird ein vortrainiertes YOLOv8-Model eingesetzt, um die Fahrzeuge in den einzelnen Frames des Videos zu erkennen.
-Der Vorteil des Frameworks ist es, dass Objekten IDs zuordnen werden können.
+Es wird ein vortrainiertes YOLOv8-Modell eingesetzt, um die Fahrzeuge in den einzelnen Frames des Videos zu erkennen.
+Der Vorteil des Frameworks ist es, dass Objekten IDs zuordnet werden können.
 Somit ist eine eindeutige Zuordnung eines Autos über mehrere Frames hinweg möglich.
 Die Zuordnung einer ID zu einem konkreten Auto über eine gewisse Dauer geschieht über verschiedene Merkmale des Objektes, wie die Eckpunkte der Objekterkennung, die Geschwindigkeit des Autos oder die Veränderung der Zuverlässigkeitswerte des Algorithmus.
 Die erkannten Fahrzeuge werden durch ihre Eckkoordinaten repräsentiert.
