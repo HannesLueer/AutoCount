@@ -24,7 +24,7 @@ Der Server wurde in der Programmiersprache Go entwickelt und dient zur Verwaltun
 
 Zum Entgegennehmen der Werte vom Sensor wird die HTTP-Schnittstelle \lstinline|PUT /api/v1/c/{site_id}| zur Verfügung gestellt.
 Die Daten werden für diese im HTTP Body in JSON übertragen.
-Das vom Server erwartete JSON Objekt, welches nachfolgenden beispielhaft dargestellt ist, enthält dabei aktuell lediglich das Attribut \lstinline|currentCars|, welches den aktuellen Zählerstand als Ganzzahl enthält.
+Das vom Server erwartete JSON Objekt, welches nachfolgend beispielhaft dargestellt ist, enthält dabei aktuell lediglich das Attribut \lstinline|currentCars|, welches den aktuellen Zählerstand als Ganzzahl enthält.
 
 \lstset{language=json, numbers=none}
 \begin{center}
@@ -40,15 +40,15 @@ Konkret besitzt hierzu jeder Sensor, der mit dem Server verbunden ist, einen ein
 Zur Authentifizierung mit dem Server wird hierzu die HTTP Basic Authentication genutzt, bei welcher Nutzername (\lstinline|site_id|) und Passwort im HTTP Header als Base64 String kodiert übertragen werden.
 Auf komplexere Authentifizierungsverfahren, wie beispielsweise JSON Web Tokens (JWT) wurde verzichtet, da die gebotenen Vorteile, wie beispielsweise die Möglichkeit zum clientseitigen Ausloggen, das automatische Ablaufen des Tokens oder der Schutz vor Klau des Passworts durch Verwendung des Tokens, in diesem Anwendungsfall als API nicht benötigt werden.
 Zu Entwicklungszwecken wurde bisher auf die Verwendung von einer verschlüsselten Datenübertragung mittels HTTPS verzichtet.
-In einer Produktivumgebung sollte zwingend HTTPS verwendet werden, um eine geschützte Übertragung zu gewährleisten.
+In einer Produktivumgebung sollte zwingend \mbox{HTTPS} verwendet werden, um eine geschützte Übertragung zu gewährleisten.
 Besonders wichtig ist dies, weil ohne verschlüsselte Verbindung das Passwort abgefangen werden kann.
 
 Als Ausgabeschnittstelle stellt der Server die Daten sowohl über HTTP als auch über MQTT bereit.
-Mittels HTTP kann über die Schnittstelle \lstinline|GET /api/v1/c/{site_id}| das JSON Objekt, welches nachfolgende beispielhaft zu sehen ist, mit den Zählerinformationen abgerufen werden.
+Mittels HTTP kann über die Schnittstelle \lstinline|GET /api/v1/c/{site_id}| das JSON Objekt, welches nachfolgend beispielhaft zu sehen ist, mit den Zählerinformationen abgerufen werden.
 Der Vorteil von MQTT besteht darin, dass Clients Daten abonnieren können, anstatt sie aktiv abzurufen.
 Der Server fungiert als MQTT-Broker und Clients können sich mit ihm verbinden, um Topics zu abonnieren und bei Änderungen dieser die Daten zu empfangen.
 Die \lstinline|site_id| wird hierbei als Topic des MQTT-Protokolls verwendet.
-Sobald vom Sensor, wie zuvor beschrieben mittels HTTP der Zählerstand aktualisiert wird, publisht der Server diesen auf die entsprechende MQTT-Topic.
+Sobald vom Sensor, wie zuvor beschrieben, mittels HTTP der Zählerstand aktualisiert wird, publisht der Server diesen auf die entsprechende MQTT-Topic.
 Beim Verbinden mit dem MQTT-Server wird der letzte bekannte Zustand an den Client gesendet, da das \lstinline|retain|-Flag auf \lstinline|true| gesetzt ist.
 Somit sind direkt aktuelle Daten verfügbar, ohne dass zunächst eine Änderung durch den Sensor gemeldet werden muss.
 Die Clients haben jedoch keine Berechtigung, Daten zu veröffentlichen (publishen).
@@ -61,7 +61,7 @@ Es gibt daher keine Beschränkungen für die MQTT-Verbindung aufgrund von IP-Adr
     "id": "HS_Coburg",
     "displayName": "Parkhaus Hochschule Coburg",
     "currentCars": 100,
-    "maxCars": 500
+    "maxCars": 530
 }
     \end{mylisting}
 \end{center}
@@ -71,6 +71,6 @@ Die erste Tabelle, \lstinline|counter|, speichert die aktuellen Zählerstände s
 Die zweite Tabelle, \lstinline|sites|, enthält die Zugangsdaten für die einzelnen Sensoren.
 Das Passwort wird hierbei nur als Hash-Wert gespeichert.
 Die Einträge zu Zugangsdaten und Details der Parkplätze müssen zuvor manuell in die Datenbank eingetragen werden.
-Hierzu, wäre es in einem finalen Produkt möglicherweise erforderlich, eine zusätzliche Anwendung für Mitarbeiter bereitzustellen.
+Hierzu wäre es in einem finalen Produkt möglicherweise erforderlich, eine zusätzliche Anwendung für Mitarbeiter bereitzustellen.
 Diese Anwendung könnte eine Benutzeroberfläche bieten, um neue Sensoren hinzuzufügen, ihre Zugangsdaten einzugeben und weitere Konfigurationen vorzunehmen.
 Für den Rahmen des aktuellen Prototyps genügt aber die Oberfläche von Drittanbieter Datenbanksoftware, wie beispielsweise der \textit{DB Browser for SQLite}.
