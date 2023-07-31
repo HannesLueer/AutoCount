@@ -26,9 +26,9 @@ def main():
     times = []
 
     model = YOLO("yolov8n.pt")
+    start_time = time.time()
     # TODO: classes 2,3,5,7 überprüfen (sollten Auto, Bus, Truck sein)
     for result in model.track(source="../../video_examples/HCPS Beispiel2.mp4", verbose=False, show=False, stream=True, agnostic_nms=True, vid_stride=5, classes=[2, 3, 5, 7]):
-        start_time = time.time()
         frame = result.orig_img
         detections = sv.Detections.from_yolov8(result)
 
@@ -56,8 +56,12 @@ def main():
 
         if (cv2.waitKey(30) == 27):
             break
+
+        print(line_counter.current_cars)
+
         end_time = time.time()
         times.append(end_time - start_time)
+        start_time = time.time()
 
     with open('../../../demo/test_times/frame_times_method_3.txt', 'w') as file:
         for time_val in times:
