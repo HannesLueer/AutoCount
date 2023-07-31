@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import numpy as np
+import statistics
 
 
 def read_data(file_path):
@@ -19,6 +20,11 @@ data_file2 = "frame_times_method_3_pc.txt"
 
 data1 = read_data(data_file1)
 data2 = read_data(data_file2)
+
+# Median
+print(f"{data_file1}: {statistics.median(data1)}")
+print(f"{data_file2}: {statistics.median(data2)}")
+
 
 # Erstelle zwei Subplots
 fig, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
