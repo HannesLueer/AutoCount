@@ -22,9 +22,12 @@ data1 = read_data(data_file1)
 data2 = read_data(data_file2)
 
 # Median
-print(f"{data_file1}: {statistics.median(data1)}")
-print(f"{data_file2}: {statistics.median(data2)}")
+print(f"Median {data_file1}: {statistics.median(data1)}")
+print(f"Median {data_file2}: {statistics.median(data2)}")
 
+# Mittelwert
+print(f"Mittelwert {data_file1}: {statistics.mean(data1)}")
+print(f"Mittelwert {data_file2}: {statistics.mean(data2)}")
 
 # Erstelle zwei Subplots
 fig, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
