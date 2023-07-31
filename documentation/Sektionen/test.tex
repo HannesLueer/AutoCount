@@ -54,14 +54,32 @@ Diese wurden jeweils korrekterweise von den Verfahren nicht beachtet.
 % Effizienz:
 Auch die Effizienz der Verfahren wurde verglichen.
 Hierzu wurde die Zeit ermittelt, die jedes Verfahren pro Frame zur Verarbeitung benötigt.
-Die Ergebnisse des 10-minütigen Tests wurden als Boxplot in Abbildung~\ref{fig:frameTimes_Boxplots} dargestellt.
-Dabei ist ersichtlich, dass Verfahren 2 effizienter ist und daher weniger Zeit pro Frame benötigt.
-Auch ist die Varianz bei Variante 1 höher.
-Aus diesen Gesichtspunkten wird sich für Variante 2 entschieden.
+Die Ergebnisse des 10-minütigen Tests wurden als Boxplots in Abbildung~\ref{fig:frameTimes_Boxplots} dargestellt.
+Aufgrund des ursprünglich geplanten Einsatzes eines Raspberry Pi, wurde der Test auf diesem durchgeführt.
+Hierbei ergab sich ein Median für Verfahren 1 von rund 2,04 Sekunden und für Verfahren 2 von rund 1,85 Sekunden.
+Als Boxplot sind die Messwerte in Abbildung~\ref{fig:frameTimes_Boxplot_pi} zu sehen, in der aufgrund der Ausreißer deutlich wird, dass Verfahren 2 in seltenen Fällen sehr lange für die Verarbeitung eines einzelnen Frames benötigt.
+Dies macht sich bereits im Mittelwert bemerkbar, da dieser bei rund 1,92 liegt, während er für Verfahren 1 dem Median entspricht.
 
 \begin{figure}[h]
 	\myImagePos{}
-	\includesvg[inkscapelatex=false,width=0.6\myImageWidth]{Bilder/frame_times_pc.svg}
-	\caption[Darstellung der Boxplots der benötigten Zeit pro Frame für die zwei entwickelten Verfahren]{Darstellung der Boxplots der benötigten Zeit pro Frame für die zwei entwickelten Verfahren (Quelle: eigene Darstellung)}
-	\label{fig:frameTimes_Boxplots}
+	\subfloat[Raspberry Pi (4~Threads @ 1,4~GHz)]{\label{fig:frameTimes_Boxplot_pi}
+		\includesvg[inkscapelatex=false,width=0.49\myImageWidth]{Bilder/frame_times_pi.svg}}
+	\hfill
+	\subfloat[PC mit i5-8259U (8~Threads @ 2,3~GHz)]{\label{fig:frameTimes_Boxplots_pc}
+		\includesvg[inkscapelatex=false,width=0.49\myImageWidth]{Bilder/frame_times_pc.svg}}
+	\caption[Darstellung der Boxplots der benötigten Zeit pro Frame für die zwei entwickelten Verfahren]{Darstellung der Boxplots der benötigten Zeit pro Frame für die zwei entwickelten Verfahren auf dem Raspberry Pi~3~B+ und einem Intel NUC NUC8i5BEH (Quelle: eigene Darstellung)}\label{fig:frameTimes_Boxplots}
 \end{figure}
+
+Um sicherzugehen, dass die starken Ausreißer nicht an äußeren Umständen des Raspberry Pi, wie beispielsweise dessen Stromversorgung oder passiven Kühlung, liegen, wurde der Test ebenfalls auf einem Rechner mit aktiver Kühlung, stabiler Stromversorgung und mehr Rechenleistung durchgeführt.
+Erwartungsgemäß konnten allgemein bessere Ergebnisse erzielt werden.
+Die starken Ausreißer bei Verfahren 2 blieben allerdings bestehen.
+Im Median erreichte jetzt Verfahren 1 mit rund 0,10 Sekunden sogar einen minimal besseren Wert als Verfahren 2 mit rund 0,11 Sekunden.
+
+Aus den Messdaten wird also ersichtlich, dass Verfahren 2 auf dem Raspberry Pi sowohl im Median als auch im Mittelwert performanter ist als Verfahren 1.
+Allerdings ist Verfahren 1 im Mittel ähnlich effizient aber besitzt vor allem eine niedrigere Varianz.
+Daher wird eine konstantere Zeit pro Frame ermöglicht, was die Messung berechenbar macht.
+Aus diesen Gesichtspunkten wird sich für Variante 1 entschieden.
+
+Da Verfahren 2 die Autos anhand ihrer Merkmale erkennt, um diesen IDs zuzuweisen, müssen Informationen zu diesen gespeichert werden.
+Daher ist die Vermutung, dass intern Datenstrukturen aufgebaut oder umstrukturiert werden, was dazu führt, dass die Hardware zusätzlich zur eigentlichen Berechnung kurzzeitig stärker beansprucht wird und die Berechnung des Frames infolgedessen deutlich mehr Zeit benötigt.
+
