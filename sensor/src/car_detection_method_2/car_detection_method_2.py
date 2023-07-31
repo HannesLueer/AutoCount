@@ -8,77 +8,18 @@ import json
 
 class ObjectDetection:
     """
-    Class implements Yolo5 model to make inferences on a youtube video using Opencv2.
+    Class implements Yolo5 model to make inferences on a video using Opencv2.
     """
 
-    def __init__(self, url, out_file="Labeled_Video.avi"):
+    def __init__(self, out_file="Labeled_Video.avi"):
         """
-        Initializes the class with youtube url and output file.
-        :param url: Has to be as youtube URL,on which prediction is made.
+        Initializes the class with output file.
         :param out_file: A valid output file name.
         """
-        self._URL = url
         self.model = self.load_model()
         self.classes = self.model.names
         self.out_file = out_file
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-
-    def getCompromisedVideo(self, filename):
-        """
-        Creates a new video streaming object to extract video frame by frame to make prediction on.
-        :return: opencv2 video capture object, with lowest quality frame available for video.
-        """
-        # play = pafy.new(self._URL).streams[-1]
-        # assert play is not None
-        cap = cv2.VideoCapture(filename)
-        # Rufen Sie die Breite und Höhe des ursprünglichen Videos ab
-
-        width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        fps = cap.get(cv2.CAP_PROP_FPS)
-        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-
-        # Definieren Sie die gewünschte Breite und Höhe für das neue Video (360p)
-        new_width = 852
-        new_height = 480
-        # new_width = 1280
-        # new_height = 720
-        greyedVideoName = "greyVideo.mp4"
-
-        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-        out = cv2.VideoWriter(greyedVideoName, fourcc, fps,
-                              (new_width, new_height), isColor=False)
-
-        while True:
-            # Lesen Sie jedes Frame des ursprünglichen Videos
-            ret, frame = cap.read()
-            if not ret:
-                break
-
-            # Skalieren Sie das Frame auf die gewünschte Größe
-            resized_frame = cv2.resize(frame, (new_width, new_height))
-
-            # Konvertieren Sie das Frame in Graustufen
-            gray_frame = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2GRAY)
-
-            # Schreiben Sie das transformierte Frame in den neuen VideoWriter
-            out.write(gray_frame)
-
-            # Zeigen Sie das transformierte Frame an
-            cv2.imshow("Transformed Video", gray_frame)
-
-            # Warten Sie entsprechend der gewünschten Framerate (10 FPS)
-            # if cv2.waitKey(1) & 0xFF == ord('q'):
-            #   break
-
-        cap.release()
-        out.release()
-        cv2.destroyAllWindows()
-
-        cap2 = cv2.VideoCapture(greyedVideoName)
-
-        return cap2
-        # return cv2.VideoCapture(play.url)
 
     def load_model(self):
         """
@@ -86,7 +27,7 @@ class ObjectDetection:
         :return: Trained Pytorch model.
         """
         model = torch.hub.load('ultralytics/yolov5',
-                               'yolov5s', pretrained=True)
+                               'yolov5n', pretrained=True)
         return model
 
     def score_frame(self, frame):
@@ -296,9 +237,7 @@ class ObjectDetection:
         and write the output into a new file.
         :return: void
         """
-        # player = cv2.VideoCapture('HCPS Beispiel grau.mp4')
-        player = cv2.VideoCapture('../../video_examples/HCPS Beispiel2.mp4')
-        # player = self.getCompromisedVideo('HCPS Beispiel.mp4')
+        player = cv2.VideoCapture('../../video_examples/10MinTest.mp4')
         assert player.isOpened()
         x_shape = int(player.get(cv2.CAP_PROP_FRAME_WIDTH))
         y_shape = int(player.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -319,7 +258,6 @@ class ObjectDetection:
                 break
 
             if (i % 6 == 0):
-                # frame = cv2.resize(frame, (640, 360))
                 # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
                 results = self.score_frame(frame)
@@ -349,9 +287,8 @@ class ObjectDetection:
                 prev_movement_vectors = movement_vectors
 
                 out.write(frame)
-
                 cv2.imshow('video', frame)
-                # cv2.imshow("Difference" , th)
+
                 if cv2.waitKey(1) == 27:
                     break
 
@@ -364,7 +301,7 @@ class ObjectDetection:
 
 
 # Create a new object and execute.
-a = ObjectDetection("https://www.youtube.com/watch?v=dwD1n7N7EAg")
+a = ObjectDetection()
 a()
 
 cv2.destroyAllWindows()
